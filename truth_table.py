@@ -5,19 +5,24 @@ import itertools
 def truth_table(predicate):
     signature = inspect.signature(predicate)
     combinations = list(itertools.product([True, False], repeat=len(signature.parameters)))
-    print(" | ".join(list(signature.parameters) + ["result"]))
-    print("------------------------")
+    params_names = list(signature.parameters)
+    title = " | ".join(params_names + ["result"])
+    print(title)
+    print('-' * len(title))
     for combination in combinations:
-        print(" | ".join([str(int(arg)) for arg in combination] + [str(int(predicate(*combination)))]))
+        print("| ".join(
+            [str(int(param_value)) + " " * len(param_name)
+             for
+             param_value, param_name in zip(combination, params_names)] + [str(int(predicate(*combination)))]))
 
 
-def first(p, q, r):
+def first(first_param, second_param, third_param):
     # ((p->q)->r) <-> (r->(q^p))
-    l_statement = not (p and not q)  # p->q
-    l_statement = not (l_statement and not r)  # (l_statement)->r
+    l_statement = not (first_param and not second_param)  # p->q
+    l_statement = not (l_statement and not third_param)  # (l_statement)->r
 
-    r_statement = q and p  # q^p
-    r_statement = not (r and not r_statement)  # (r->r_statement)
+    r_statement = second_param and first_param  # q^p
+    r_statement = not (third_param and not r_statement)  # (r->r_statement)
 
     return (l_statement and r_statement) or (not l_statement and not r_statement)
 
